@@ -1,0 +1,54 @@
+<!-- templates/assets/asset_list.html -->
+{% extends 'base.html' %}
+
+{% block title %}Assets - {{ project.name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1 class="page-title">📦 Asset Library</h1>
+            <p class="page-description">{{ project.name }} - Game assets and resources</p>
+        </div>
+        <a href="{% url 'asset_upload' project.pk %}" class="btn-primary-minimal">+ Upload Asset</a>
+    </div>
+</div>
+
+<div class="page-content">
+    <!-- Filter Tabs -->
+    <div style="display: flex; gap: 24px; margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+        <button class="btn-ghost" style="font-weight: 600; border-bottom: 2px solid var(--accent); padding-bottom: 8px;">All</button>
+        <button class="btn-ghost">🖼️ Sprites</button>
+        <button class="btn-ghost">🎨 Textures</button>
+        <button class="btn-ghost">🎮 3D Models</button>
+        <button class="btn-ghost">🎵 Audio</button>
+        <button class="btn-ghost">✨ Shaders</button>
+        <button class="btn-ghost">📄 Documents</button>
+    </div>
+    
+    <!-- Asset Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;">
+        {% for asset in assets %}
+        <div class="minimal-card" style="cursor: pointer;">
+            <div style="aspect-ratio: 16/9; background: var(--bg-secondary); border-radius: 3px; margin-bottom: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                {% if asset.thumbnail %}
+                <img src="{{ asset.thumbnail.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                <span style="font-size: 32px; opacity: 0.5;">{{ asset.get_asset_type_display|slice:":2" }}</span>
+                {% endif %}
+            </div>
+            <div class="card-title">{{ asset.name }}</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                <span class="tag tag-default" style="font-size: 11px;">{{ asset.get_status_display }}</span>
+                <span style="font-size: 11px; color: var(--text-tertiary);">{{ asset.updated_at|date:"M d" }}</span>
+            </div>
+        </div>
+        {% empty %}
+        <div style="grid-column: 1 / -1; text-align: center; padding: 48px; color: var(--text-tertiary);">
+            <p style="font-size: 16px; margin-bottom: 8px;">No assets uploaded yet</p>
+            <p style="font-size: 14px;">Upload your first asset to get started</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

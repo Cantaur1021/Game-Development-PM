@@ -4,64 +4,62 @@
 {% block title %}Add Dev Log - {{ project.name }}{% endblock %}
 
 {% block content %}
-<h1>📝 Add Dev Log for {{ project.name }}</h1>
+<div class="page-header">
+    <h1 class="page-title">📝 Development Log</h1>
+    <p class="page-description">{{ project.name }} - Document today's progress</p>
+</div>
 
-<div class="card">
-    <div class="card-body">
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            
-            <div class="mb-3">
-                <label class="form-label">Title (Optional)</label>
-                <input type="text" name="title" class="form-control" placeholder="e.g., Implemented enemy AI">
+<div class="page-content" style="max-width: 700px;">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div style="margin-bottom: 20px;">
+            <label class="form-label-minimal">Title (Optional)</label>
+            <input type="text" name="title" class="form-control-minimal" placeholder="e.g., Implemented enemy AI system">
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label class="form-label-minimal">What did you work on? * <span style="color: var(--text-tertiary);">(Markdown supported)</span></label>
+            <textarea name="work_done" class="form-control-minimal" rows="6" required 
+                placeholder="- Fixed the jumping bug&#10;- Added particle effects to explosions&#10;- Refactored the inventory system&#10;- Started work on boss AI" style="font-family: 'Monaco', 'Menlo', monospace; font-size: 13px;"></textarea>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+            <div>
+                <label class="form-label-minimal">Blockers</label>
+                <textarea name="blockers" class="form-control-minimal" rows="3" 
+                    placeholder="What's preventing progress?" style="font-family: 'Monaco', 'Menlo', monospace; font-size: 13px;"></textarea>
             </div>
-            
-            <div class="mb-3">
-                <label class="form-label">What did you work on today? * (Markdown supported)</label>
-                <textarea name="work_done" class="form-control" rows="5" required 
-                    placeholder="- Fixed the jumping bug&#10;- Added new particle effects&#10;- Implemented save system"></textarea>
+            <div>
+                <label class="form-label-minimal">Next Steps</label>
+                <textarea name="next_steps" class="form-control-minimal" rows="3"
+                    placeholder="What's planned for tomorrow?" style="font-family: 'Monaco', 'Menlo', monospace; font-size: 13px;"></textarea>
             </div>
-            
-            <div class="mb-3">
-                <label class="form-label">Any blockers?</label>
-                <textarea name="blockers" class="form-control" rows="3" 
-                    placeholder="What's preventing progress?"></textarea>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+            <div>
+                <label class="form-label-minimal">Hours Worked</label>
+                <input type="number" name="hours_worked" class="form-control-minimal" step="0.5" min="0" value="0">
             </div>
-            
-            <div class="mb-3">
-                <label class="form-label">What's next?</label>
-                <textarea name="next_steps" class="form-control" rows="3"
-                    placeholder="Tomorrow's tasks"></textarea>
+            <div>
+                <label class="form-label-minimal">Mood</label>
+                <select name="mood" class="form-control-minimal">
+                    {% for value, label in moods %}
+                    <option value="{{ value }}" {% if value == 'neutral' %}selected{% endif %}>{{ label|slice:"2:" }}</option>
+                    {% endfor %}
+                </select>
             </div>
-            
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="mb-3">
-                        <label class="form-label">Hours Worked</label>
-                        <input type="number" name="hours_worked" class="form-control" step="0.5" min="0" value="0">
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="mb-3">
-                        <label class="form-label">Mood</label>
-                        <select name="mood" class="form-select">
-                            {% for value, label in moods %}
-                                <option value="{{ value }}">{{ label }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="mb-3">
-                        <label class="form-label">Screenshot (Optional)</label>
-                        <input type="file" name="screenshot" class="form-control" accept="image/*">
-                    </div>
-                </div>
+            <div>
+                <label class="form-label-minimal">Screenshot</label>
+                <input type="file" name="screenshot" class="form-control-minimal" accept="image/*">
             </div>
-            
-            <button type="submit" class="btn btn-success">Save Dev Log</button>
-            <a href="{% url 'project_detail' project.pk %}" class="btn btn-secondary">Cancel</a>
-        </form>
-    </div>
+        </div>
+        
+        <div style="display: flex; gap: 8px;">
+            <button type="submit" class="btn-primary-minimal">Save Log</button>
+            <a href="{% url 'project_detail' project.pk %}" class="btn-secondary-minimal" style="text-decoration: none;">Cancel</a>
+        </div>
+    </form>
 </div>
 {% endblock %}

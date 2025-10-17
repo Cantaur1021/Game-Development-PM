@@ -1,0 +1,82 @@
+<!-- templates/assets/asset_upload.html -->
+{% extends 'base.html' %}
+
+{% block title %}Upload Asset - {{ project.name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">📦 Upload Asset</h1>
+    <p class="page-description">{{ project.name }} - Add game assets to your library</p>
+</div>
+
+<div class="page-content" style="max-width: 600px;">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div style="margin-bottom: 20px;">
+            <label class="form-label-minimal">Asset Name *</label>
+            <input type="text" name="name" class="form-control-minimal" required 
+                placeholder="e.g., Player Sprite Sheet">
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+            <div>
+                <label class="form-label-minimal">Asset Type *</label>
+                <select name="asset_type" class="form-control-minimal" required>
+                    {% for value, label in asset_types %}
+                    <option value="{{ value }}">{{ label|slice:"2:" }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="form-label-minimal">Status</label>
+                <select name="status" class="form-control-minimal">
+                    {% for value, label in statuses %}
+                    <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label class="form-label-minimal">File *</label>
+            <input type="file" name="file" class="form-control-minimal" required>
+            <small style="color: var(--text-tertiary); display: block; margin-top: 4px;">
+                Supported formats: Images, Audio, 3D Models, Documents
+            </small>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label class="form-label-minimal">Thumbnail (Optional)</label>
+            <input type="file" name="thumbnail" class="form-control-minimal" accept="image/*">
+            <small style="color: var(--text-tertiary); display: block; margin-top: 4px;">
+                Auto-generated for images if not provided
+            </small>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label class="form-label-minimal">Description</label>
+            <textarea name="description" class="form-control-minimal" rows="3" 
+                placeholder="Notes about this asset..."></textarea>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+            <div>
+                <label class="form-label-minimal">License</label>
+                <input type="text" name="license" class="form-control-minimal" 
+                    placeholder="e.g., CC0, Purchased, Original">
+            </div>
+            <div>
+                <label class="form-label-minimal">Source URL</label>
+                <input type="url" name="source_url" class="form-control-minimal" 
+                    placeholder="https://...">
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 8px;">
+            <button type="submit" class="btn-primary-minimal">Upload Asset</button>
+            <a href="{% url 'asset_list' project.pk %}" class="btn-secondary-minimal" style="text-decoration: none;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

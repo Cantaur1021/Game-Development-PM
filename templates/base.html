@@ -4,100 +4,445 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}TiltPenguin Game PM{% endblock %}</title>
+    <title>{% block title %}TiltPenguin{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #6c5ce7;
-            --secondary-color: #00b894;
-            --danger-color: #d63031;
-            --dark-bg: #2d3436;
-            --light-bg: #dfe6e9;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f7f7f5;
+            --bg-tertiary: #37352f0d;
+            --text-primary: #37352f;
+            --text-secondary: #787774;
+            --text-tertiary: #9b9a97;
+            --border-color: #e9e9e7;
+            --hover-bg: #f7f7f5;
+            --accent: #2383e2;
+            --accent-hover: #0b6ec5;
+            --success: #0f7b6c;
+            --warning: #dfab01;
+            --danger: #eb5757;
+            --sidebar-width: 240px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
         body {
-            background-color: #f8f9fa;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            font-size: 14px;
+            -webkit-font-smoothing: antialiased;
         }
         
-        .navbar {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 12px;
+            overflow-y: auto;
         }
         
-        .card {
-            border: none;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            transition: transform 0.2s;
+        .sidebar-header {
+            padding: 8px 6px;
+            margin-bottom: 8px;
         }
         
-        .card:hover {
-            transform: translateY(-2px);
+        .sidebar-title {
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
-        .badge {
-            padding: 0.35em 0.65em;
+        .sidebar-section {
+            margin-bottom: 24px;
         }
         
-        .progress {
-            height: 8px;
+        .sidebar-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 4px 6px;
+            margin-bottom: 4px;
+        }
+        
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 4px 6px;
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: 3px;
+            margin-bottom: 1px;
+            font-size: 14px;
+            transition: background 0.1s ease;
+        }
+        
+        .sidebar-link:hover {
+            background: var(--hover-bg);
+            color: var(--text-primary);
+        }
+        
+        .sidebar-link.active {
+            background: var(--bg-tertiary);
+        }
+        
+        .sidebar-icon {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            opacity: 0.8;
+            flex-shrink: 0;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+        }
+        
+        .page-header {
+            padding: 36px 96px 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .page-description {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .page-content {
+            padding: 24px 96px 96px;
+            max-width: 1200px;
+        }
+        
+        /* Cards */
+        .minimal-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: box-shadow 0.1s ease;
+        }
+        
+        .minimal-card:hover {
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .card-subtitle {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-bottom: 8px;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
         }
         
         .stat-card {
-            border-left: 4px solid var(--primary-color);
+            background: var(--bg-secondary);
+            padding: 16px;
+            border-radius: 4px;
         }
         
-        .priority-blocker { color: #d63031; }
-        .priority-critical { color: #e17055; }
-        .priority-major { color: #fdcb6e; }
-        .priority-minor { color: #00b894; }
-        .priority-polish { color: #74b9ff; }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        
+        /* Progress Bar */
+        .progress-minimal {
+            height: 4px;
+            background: var(--bg-tertiary);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .progress-bar-minimal {
+            height: 100%;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+        
+        /* Buttons */
+        .btn-minimal {
+            padding: 6px 12px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 3px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .btn-primary-minimal {
+            background: var(--text-primary);
+            color: white;
+        }
+        
+        .btn-primary-minimal:hover {
+            background: #000;
+        }
+        
+        .btn-secondary-minimal {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-secondary-minimal:hover {
+            background: var(--bg-secondary);
+        }
+        
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+            padding: 4px 8px;
+        }
+        
+        .btn-ghost:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        
+        /* Table */
+        .minimal-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .minimal-table th {
+            text-align: left;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-tertiary);
+            padding: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .minimal-table td {
+            padding: 8px;
+            border-bottom: 1px solid var(--bg-tertiary);
+            font-size: 14px;
+        }
+        
+        .minimal-table tr:hover td {
+            background: var(--bg-secondary);
+        }
+        
+        /* Tags */
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .tag-default {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .tag-blue {
+            background: #2383e20d;
+            color: var(--accent);
+        }
+        
+        .tag-green {
+            background: #0f7b6c0d;
+            color: var(--success);
+        }
+        
+        .tag-yellow {
+            background: #dfab010d;
+            color: var(--warning);
+        }
+        
+        .tag-red {
+            background: #eb57570d;
+            color: var(--danger);
+        }
+        
+        /* Forms */
+        .form-control-minimal {
+            width: 100%;
+            padding: 6px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            font-size: 14px;
+            background: var(--bg-primary);
+            transition: all 0.1s ease;
+        }
+        
+        .form-control-minimal:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--accent)0d;
+        }
+        
+        .form-label-minimal {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .page-content {
+                padding: 24px;
+            }
+            
+            .page-header {
+                padding: 24px;
+            }
+        }
+        
+        /* Status Indicators */
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+        
+        .status-active { background: var(--success); }
+        .status-pending { background: var(--warning); }
+        .status-inactive { background: var(--text-tertiary); }
+        
+        /* Dropdown */
+        .select-minimal {
+            padding: 4px 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            font-size: 14px;
+            background: var(--bg-primary);
+            cursor: pointer;
+        }
+        
+        .select-minimal:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
     </style>
 </head>
 <body>
-<!-- Update templates/base.html navbar section -->
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container">
-        <a class="navbar-brand" href="/">🎮 TiltPenguin PM</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/">Dashboard</a>
-                </li>
-                {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'project_create' %}">New Project</a>
-                </li>
-                {% endif %}
-            </ul>
-            <span class="navbar-text text-white">
-                {% if user.is_authenticated %}
-                    👤 {{ user.username }} | 
-                    <a href="{% url 'logout' %}" class="text-white">Logout</a>
-                {% else %}
-                    <a href="{% url 'login' %}" class="text-white">Login</a>
-                {% endif %}
-                | Powered by ☕ & delusion
-            </span>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="/" class="sidebar-title">
+                <span>🎮</span>
+                <span>TiltPenguin</span>
+            </a>
+        </div>
+        
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Main</div>
+            <a href="/" class="sidebar-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                <span class="sidebar-icon">📊</span>
+                Dashboard
+            </a>
+            <a href="{% url 'project_create' %}" class="sidebar-link">
+                <span class="sidebar-icon">➕</span>
+                New Project
+            </a>
+        </div>
+        
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Projects</div>
+            {% for project in projects %}
+            <a href="{% url 'project_detail' project.pk %}" class="sidebar-link">
+                <span class="sidebar-icon">🎯</span>
+                {{ project.name }}
+            </a>
+            {% endfor %}
+        </div>
+        
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Quick Links</div>
+            <a href="#" class="sidebar-link">
+                <span class="sidebar-icon">🐛</span>
+                All Bugs
+            </a>
+            <a href="#" class="sidebar-link">
+                <span class="sidebar-icon">📝</span>
+                Dev Logs
+            </a>
+            <a href="#" class="sidebar-link">
+                <span class="sidebar-icon">📦</span>
+                Assets
+            </a>
         </div>
     </div>
-</nav>
     
-    <main class="container my-4">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-        
+    <!-- Main Content -->
+    <div class="main-content">
         {% block content %}{% endblock %}
-    </main>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    </div>
 </body>
 </html>

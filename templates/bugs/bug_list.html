@@ -1,0 +1,91 @@
+<!-- templates/bugs/bug_list.html -->
+{% extends 'base.html' %}
+
+{% block title %}Bugs - {{ project.name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1 class="page-title">🐛 Bug Tracker</h1>
+            <p class="page-description">{{ project.name }} - All reported bugs and issues</p>
+        </div>
+        <a href="{% url 'bug_create' project.pk %}" class="btn-primary-minimal">+ Report Bug</a>
+    </div>
+</div>
+
+<div class="page-content">
+    <!-- Filter Bar -->
+    <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+        <select class="select-minimal">
+            <option>All Severities</option>
+            <option>🔴 Blocker</option>
+            <option>🟠 Critical</option>
+            <option>🟡 Major</option>
+            <option>🟢 Minor</option>
+        </select>
+        <select class="select-minimal">
+            <option>All Statuses</option>
+            <option>New</option>
+            <option>Confirmed</option>
+            <option>In Progress</option>
+            <option>Resolved</option>
+        </select>
+        <input type="search" class="form-control-minimal" placeholder="Search bugs..." style="max-width: 300px;">
+    </div>
+    
+    <!-- Bug List -->
+    <div style="background: white; border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden;">
+        <table class="minimal-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Severity</th>
+                    <th>Status</th>
+                    <th>Level/Scene</th>
+                    <th>Reported</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bug in bugs %}
+                <tr>
+                    <td style="color: var(--text-tertiary);">#{{ bug.id }}</td>
+                    <td style="font-weight: 500;">
+                        <a href="{% url 'bug_detail' bug.pk %}" style="color: inherit; text-decoration: none;">
+                            {{ bug.title }}
+                        </a>
+                    </td>
+                    <td>
+                        <span class="tag {% if 'Blocker' in bug.get_severity_display %}tag-red{% elif 'Critical' in bug.get_severity_display %}tag-yellow{% else %}tag-default{% endif %}">
+                            {{ bug.get_severity_display|slice:"2:" }}
+                        </span>
+                    </td>
+                    <td>
+                        <select class="select-minimal" onchange="updateBugStatus({{ bug.pk }}, this.value)">
+                            {% for value, label in bug.STATUS_CHOICES %}
+                            <option value="{{ value }}" {% if value == bug.status %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td style="color: var(--text-secondary);">{{ bug.level_scene|default:"-" }}</td>
+                    <td style="color: var(--text-tertiary);">{{ bug.created_at|date:"M d" }}</td>
+                    <td>
+                        <button class="btn-ghost" style="padding: 2px 6px;">...</button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center; color: var(--text-tertiary); padding: 24px;">
+                        No bugs reported. That's good news! 🎉
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,93 @@
+<!-- templates/bugs/bug_form.html -->
+{% extends 'base.html' %}
+
+{% block title %}Report Bug - {{ project.name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">🐛 Report Bug</h1>
+    <p class="page-description">{{ project.name }} - Track an issue or bug</p>
+</div>
+
+<div class="page-content" style="max-width: 700px;">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div style="margin-bottom: 20px;">
+            <label class="form-label-minimal">Bug Title *</label>
+            <input type="text" name="title" class="form-control-minimal" required 
+                placeholder="e.g., Player clips through walls when jumping">
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+            <div>
+                <label class="form-label-minimal">Severity *</label>
+                <select name="severity" class="form-control-minimal" required>
+                    {% for value, label in severities %}
+                    <option value="{{ value }}">{{ label|slice:"2:" }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="form-label-minimal">Status</label>
+                <select name="status" class="form-control-minimal">
+                    {% for value, label in statuses %}
+                    <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label class="form-label-minimal">Description *</label>
+            <textarea name="description" class="form-control-minimal" rows="3" required
+                placeholder="Describe the bug in detail..."></textarea>
+        </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label class="form-label-minimal">Reproduction Steps *</label>
+            <textarea name="reproduction_steps" class="form-control-minimal" rows="4" required
+                placeholder="1. Start the game&#10;2. Go to level 3&#10;3. Jump near the corner&#10;4. Player clips through wall" style="font-family: 'Monaco', 'Menlo', monospace; font-size: 13px;"></textarea>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+            <div>
+                <label class="form-label-minimal">Expected Behavior *</label>
+                <textarea name="expected_behavior" class="form-control-minimal" rows="2" required
+                    placeholder="What should happen?"></textarea>
+            </div>
+            <div>
+                <label class="form-label-minimal">Actual Behavior *</label>
+                <textarea name="actual_behavior" class="form-control-minimal" rows="2" required
+                    placeholder="What actually happens?"></textarea>
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+            <div>
+                <label class="form-label-minimal">Level/Scene</label>
+                <input type="text" name="level_scene" class="form-control-minimal" 
+                    placeholder="e.g., Level 3, Boss Room">
+            </div>
+            <div>
+                <label class="form-label-minimal">Build Version</label>
+                <select name="build_version" class="form-control-minimal">
+                    <option value="">Select Build</option>
+                    {% for build in builds %}
+                    <option value="{{ build.id }}">v{{ build.version }} ({{ build.platform }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="form-label-minimal">Screenshot</label>
+                <input type="file" name="screenshot" class="form-control-minimal" accept="image/*">
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 8px;">
+            <button type="submit" class="btn-primary-minimal">Report Bug</button>
+            <a href="{% url 'project_detail' project.pk %}" class="btn-secondary-minimal" style="text-decoration: none;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
