@@ -1,3 +1,10 @@
-from django.contrib import admin
+# tasks/admin.py
 
-# Register your models here.
+from django.contrib import admin
+from .models import Task
+
+@admin.register(Task)
+class TaskAdmin(admin.ModelAdmin):
+    list_display = ['title', 'project', 'category', 'priority', 'status', 'assigned_to']
+    list_filter = ['status', 'priority', 'category']
+    search_fields = ['title', 'description']
