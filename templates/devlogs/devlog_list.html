@@ -1,0 +1,59 @@
+<!-- templates/devlogs/devlog_list.html -->
+{% extends 'base.html' %}
+
+{% block title %}Dev Logs - {{ project.name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h1 class="page-title">📝 Development Logs</h1>
+            <p class="page-description">{{ project.name }} - Progress tracking</p>
+        </div>
+        <a href="{% url 'devlog_create' project.pk %}" class="btn-primary-minimal">+ New Log</a>
+    </div>
+</div>
+
+<div class="page-content">
+    {% for log in devlogs %}
+    <div class="minimal-card">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+            <div>
+                <span style="font-weight: 600; font-size: 16px;">{{ log.date|date:"F d, Y" }}</span>
+                {% if log.title %}
+                <span style="margin-left: 12px; color: var(--text-secondary);">{{ log.title }}</span>
+                {% endif %}
+            </div>
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <span class="tag tag-default">{{ log.hours_worked }}h</span>
+                <span style="font-size: 18px;">{{ log.get_mood_display|slice:":2" }}</span>
+            </div>
+        </div>
+        
+        <div style="color: var(--text-primary); font-size: 14px; line-height: 1.6; margin-bottom: 12px;">
+            {{ log.work_done_html|safe }}
+        </div>
+        
+        {% if log.blockers %}
+        <div style="background: var(--bg-secondary); padding: 8px 12px; border-radius: 3px; margin-bottom: 8px;">
+            <strong style="color: var(--danger); font-size: 12px;">BLOCKERS:</strong>
+            <div style="font-size: 13px; margin-top: 4px;">{{ log.blockers_html|safe }}</div>
+        </div>
+        {% endif %}
+        
+        {% if log.next_steps %}
+        <div style="background: var(--bg-secondary); padding: 8px 12px; border-radius: 3px;">
+            <strong style="color: var(--success); font-size: 12px;">NEXT STEPS:</strong>
+            <div style="font-size: 13px; margin-top: 4px;">{{ log.next_steps_html|safe }}</div>
+        </div>
+        {% endif %}
+    </div>
+    {% empty %}
+    <div style="text-align: center; padding: 48px; color: var(--text-tertiary);">
+        <p style="font-size: 16px;">No development logs yet</p>
+        <p style="font-size: 14px; margin-top: 8px;">Start documenting your progress!</p>
+        <a href="{% url 'devlog_create' project.pk %}" class="btn-primary-minimal" style="margin-top: 16px;">Create First Log</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
