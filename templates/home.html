@@ -1,0 +1,118 @@
+<!-- templates/home.html -->
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - TiltPenguin PM{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">🎮 Game Development Dashboard</h1>
+
+<!-- Project Overview -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <h6 class="text-muted">Total Projects</h6>
+                <h2>{{ projects.count }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <h6 class="text-muted">Active Projects</h6>
+                <h2>{{ active_projects.count }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <h6 class="text-muted">Open Bugs</h6>
+                <h2>{{ open_bugs.count }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body">
+                <h6 class="text-muted">Recent Tasks</h6>
+                <h2>{{ recent_tasks.count }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Active Projects -->
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">🚀 Active Projects</h5>
+            </div>
+            <div class="card-body">
+                {% for project in active_projects %}
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6>
+                                <a href="{% url 'project_detail' project.pk %}" class="text-decoration-none">
+                                    {{ project.name }}
+                                </a>
+                                <span class="badge bg-secondary">{{ project.get_status_display }}</span>
+                            </h6>
+                            <small class="text-muted">{{ project.genre }} | {{ project.get_engine_display }}</small>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" style="width: {{ project.progress_percentage }}%">
+                                {{ project.progress_percentage }}%
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-muted">No active projects. Start a new one!</p>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Recent Dev Logs -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">📝 Recent Dev Logs</h5>
+            </div>
+            <div class="card-body">
+                {% for log in recent_devlogs %}
+                    <div class="mb-3 pb-3 border-bottom">
+                        <div class="d-flex justify-content-between">
+                            <h6>{{ log.project.name }}</h6>
+                            <span>{{ log.get_mood_display }}</span>
+                        </div>
+                        <small class="text-muted">{{ log.date }} | {{ log.hours_worked }}h worked</small>
+                        <p class="mb-0 mt-2">{{ log.work_done|truncatewords:20 }}</p>
+                    </div>
+                {% empty %}
+                    <p class="text-muted">No dev logs yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Open Bugs -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">🐛 Open Bugs</h5>
+            </div>
+            <div class="card-body">
+                {% for bug in open_bugs %}
+                    <div class="mb-2">
+                        <span class="priority-{{ bug.severity }}">{{ bug.get_severity_display }}</span>
+                        <br>
+                        <small>{{ bug.title|truncatewords:10 }}</small>
+                    </div>
+                {% empty %}
+                    <p class="text-muted">No open bugs! 🎉</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

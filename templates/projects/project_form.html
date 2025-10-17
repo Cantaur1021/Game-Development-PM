@@ -1,0 +1,87 @@
+<!-- templates/projects/project_form.html -->
+{% extends 'base.html' %}
+
+{% block title %}Create Project - TiltPenguin PM{% endblock %}
+
+{% block content %}
+<h1>🎮 Create New Project</h1>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Project Name *</label>
+                        <input type="text" name="name" class="form-control" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Code Name</label>
+                        <input type="text" name="code_name" class="form-control" placeholder="Internal name">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea name="description" class="form-control" rows="3"></textarea>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">Genre *</label>
+                        <input type="text" name="genre" class="form-control" placeholder="e.g., Roguelike, Puzzle" required>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">Engine *</label>
+                        <select name="engine" class="form-select" required>
+                            {% for value, label in engines %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select name="status" class="form-select">
+                            {% for value, label in statuses %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <div class="form-check">
+                    <input type="checkbox" name="is_jam_game" class="form-check-input" id="jamCheck">
+                    <label class="form-check-label" for="jamCheck">
+                        This is a game jam project
+                    </label>
+                </div>
+            </div>
+            
+            <div class="mb-3" id="jamNameField" style="display:none;">
+                <label class="form-label">Jam Name</label>
+                <input type="text" name="jam_name" class="form-control" placeholder="e.g., Ludum Dare 54">
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Create Project</button>
+            <a href="/" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+
+<script>
+document.getElementById('jamCheck').addEventListener('change', function() {
+    document.getElementById('jamNameField').style.display = this.checked ? 'block' : 'none';
+});
+</script>
+{% endblock %}

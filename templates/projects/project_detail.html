@@ -1,0 +1,175 @@
+<!-- templates/projects/project_detail.html -->
+{% extends 'base.html' %}
+
+{% block title %}{{ project.name }} - TiltPenguin PM{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>{{ project.name }}</h1>
+    <div>
+        <span class="badge bg-primary">{{ project.get_status_display }}</span>
+        <span class="badge bg-info">{{ project.get_engine_display }}</span>
+        {% if project.is_jam_game %}
+            <span class="badge bg-warning">Game Jam: {{ project.jam_name }}</span>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Project Stats -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h3>{{ task_stats.total }}</h3>
+                <small class="text-muted">Total Tasks</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h3>{{ task_stats.completed }}</h3>
+                <small class="text-muted">Completed</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h3>{{ task_stats.in_progress }}</h3>
+                <small class="text-muted">In Progress</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h3>{{ open_bugs.count }}</h3>
+                <small class="text-muted">Open Bugs</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="mb-4">
+    <a href="{% url 'task_create' project.pk %}" class="btn btn-primary">➕ Add Task</a>
+    <a href="{% url 'devlog_create' project.pk %}" class="btn btn-success">📝 Add Dev Log</a>
+    <a href="#" class="btn btn-warning">🐛 Report Bug</a>
+    <a href="#" class="btn btn-info">🏁 Add Milestone</a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Tasks -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">📋 Tasks</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Priority</th>
+                                <th>Task</th>
+                                <th>Category</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for task in tasks %}
+                                <tr>
+                                    <td><span class="priority-{{ task.priority }}">{{ task.get_priority_display }}</span></td>
+                                    <td>{{ task.title }}</td>
+                                    <td>{{ task.get_category_display }}</td>
+                                    <td>
+                                        <select class="form-select form-select-sm" onchange="updateTaskStatus({{ task.pk }}, this.value)">
+                                            {% for value, label in task.STATUS_CHOICES %}
+                                                <option value="{{ value }}" {% if value == task.status %}selected{% endif %}>
+                                                    {{ label }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">No tasks yet</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Dev Logs -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">📝 Recent Dev Logs</h5>
+            </div>
+            <div class="card-body">
+                {% for log in recent_logs %}
+                    <div class="mb-3 pb-3 border-bottom">
+                        <div class="d-flex justify-content-between">
+                            <strong>{{ log.date }}</strong>
+                            <span>{{ log.get_mood_display }} | {{ log.hours_worked }}h</span>
+                        </div>
+                        <div class="mt-2">
+                            {{ log.work_done_html|safe|truncatewords_html:30 }}
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-muted">No dev logs yet</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Milestones -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">🏁 Upcoming Milestones</h5>
+            </div>
+            <div class="card-body">
+                {% for milestone in milestones %}
+                    <div class="mb-2">
+                        <strong>{{ milestone.name }}</strong><br>
+                        <small class="text-muted">Due: {{ milestone.due_date }}</small>
+                    </div>
+                {% empty %}
+                    <p class="text-muted">No upcoming milestones</p>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Recent Builds -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">🔨 Recent Builds</h5>
+            </div>
+            <div class="card-body">
+                {% for build in recent_builds %}
+                    <div class="mb-2">
+                        <strong>v{{ build.version }}</strong> 
+                        {% if build.is_stable %}<span class="badge bg-success">Stable</span>{% endif %}
+                        <br>
+                        <small class="text-muted">{{ build.platform }} | {{ build.build_date|date:"M d" }}</small>
+                    </div>
+                {% empty %}
+                    <p class="text-muted">No builds yet</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function updateTaskStatus(taskId, newStatus) {
+    // We'll implement this with AJAX later
+    console.log('Update task', taskId, 'to', newStatus);
+}
+</script>
+{% endblock %}

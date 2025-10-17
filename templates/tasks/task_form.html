@@ -1,0 +1,76 @@
+<!-- templates/tasks/task_form.html -->
+{% extends 'base.html' %}
+
+{% block title %}Add Task - {{ project.name }}{% endblock %}
+
+{% block content %}
+<h1>➕ Add Task to {{ project.name }}</h1>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Task Title *</label>
+                <input type="text" name="title" class="form-control" required>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea name="description" class="form-control" rows="3"></textarea>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">Category *</label>
+                        <select name="category" class="form-select" required>
+                            {% for value, label in categories %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">Priority *</label>
+                        <select name="priority" class="form-select" required>
+                            {% for value, label in priorities %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select name="status" class="form-select">
+                            {% for value, label in statuses %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Estimated Hours</label>
+                        <input type="number" name="estimated_hours" class="form-control" step="0.5" min="0">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Due Date</label>
+                        <input type="date" name="due_date" class="form-control">
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Create Task</button>
+            <a href="{% url 'project_detail' project.pk %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
