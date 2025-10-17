@@ -31,3 +31,14 @@ def devlog_create(request, project_pk):
         'moods': DevLog.MOOD_CHOICES,
     }
     return render(request, 'devlogs/devlog_form.html', context)
+
+# devlogs/views.py - add this function
+def devlog_list(request, project_pk):
+    project = get_object_or_404(Project, pk=project_pk)
+    devlogs = project.devlog_set.all()
+    
+    context = {
+        'project': project,
+        'devlogs': devlogs,
+    }
+    return render(request, 'devlogs/devlog_list.html', context)

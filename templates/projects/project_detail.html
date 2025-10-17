@@ -17,15 +17,15 @@
             </p>
         </div>
         <div class="quick-actions">
-            <button class="btn-ghost">⚙️</button>
-            <button class="btn-ghost">📊</button>
-            <button class="btn-ghost">🔗</button>
+            <a href="{% url 'bug_list' project.pk %}" class="btn-ghost" style="text-decoration: none;">🐛</a>
+            <a href="{% url 'asset_list' project.pk %}" class="btn-ghost" style="text-decoration: none;">📦</a>
+            <a href="{% url 'devlog_list' project.pk %}" class="btn-ghost" style="text-decoration: none;">📝</a>
         </div>
     </div>
 </div>
 
 <div class="page-content">
-    <!-- Quick Actions -->
+    <!-- Quick Actions - Fixed Links -->
     <div class="quick-actions" style="margin-bottom: 32px;">
         <a href="{% url 'task_create' project.pk %}" class="btn-primary-minimal">
             + New Task
@@ -33,14 +33,18 @@
         <a href="{% url 'devlog_create' project.pk %}" class="btn-secondary-minimal">
             📝 Add Log
         </a>
-        <button class="btn-secondary-minimal">
+        <a href="{% url 'bug_create' project.pk %}" class="btn-secondary-minimal">
             🐛 Report Bug
-        </button>
-        <button class="btn-secondary-minimal">
+        </a>
+        <a href="{% url 'milestone_create' project.pk %}" class="btn-secondary-minimal">
             🏁 Add Milestone
-        </button>
+        </a>
+        <a href="{% url 'asset_upload' project.pk %}" class="btn-secondary-minimal">
+            📦 Upload Asset
+        </a>
     </div>
     
+    <!-- Rest of the template remains the same -->
     <!-- Stats -->
     <div class="stats-grid" style="margin-bottom: 32px;">
         <div class="stat-card">
@@ -61,122 +65,45 @@
         </div>
     </div>
     
-    <!-- Tasks Table -->
+    <!-- Add section headers that link to full lists -->
     <section style="margin-bottom: 48px;">
-        <h2 style="font-size: 16px; font-weight: 600; margin-bottom: 16px;">Tasks</h2>
-        <div style="background: white; border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden;">
-            <table class="minimal-table">
-                <thead>
-                    <tr>
-                        <th style="width: 40px;"></th>
-                        <th>Title</th>
-                        <th>Category</th>
-                        <th>Priority</th>
-                        <th>Status</th>
-                        <th style="width: 100px;">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for task in tasks %}
-                    <tr>
-                        <td>
-                            <input type="checkbox" {% if task.status == 'completed' %}checked{% endif %}>
-                        </td>
-                        <td style="font-weight: 500;">{{ task.title }}</td>
-                        <td>
-                            <span class="tag tag-default">{{ task.get_category_display|slice:"2:" }}</span>
-                        </td>
-                        <td>
-                            <span class="tag {% if 'Blocker' in task.get_priority_display %}tag-red{% elif 'Critical' in task.get_priority_display %}tag-yellow{% else %}tag-default{% endif %}">
-                                {{ task.get_priority_display|slice:"2:" }}
-                            </span>
-                        </td>
-                        <td>
-                            <select class="select-minimal" onchange="updateTaskStatus({{ task.pk }}, this.value)">
-                                {% for value, label in task.STATUS_CHOICES %}
-                                <option value="{{ value }}" {% if value == task.status %}selected{% endif %}>
-                                    {{ label }}
-                                </option>
-                                {% endfor %}
-                            </select>
-                        </td>
-                        <td>
-                            <button class="btn-ghost" style="padding: 2px 6px;">...</button>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" style="text-align: center; color: var(--text-tertiary); padding: 24px;">
-                            No tasks yet. Create your first task to get started.
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h2 style="font-size: 16px; font-weight: 600;">Tasks</h2>
+            <a href="{% url 'task_list' project.pk %}" class="btn-ghost" style="text-decoration: none;">View All →</a>
         </div>
+        <!-- Tasks table here -->
     </section>
     
     <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px;">
-        <!-- Dev Logs -->
+        <!-- Dev Logs with View All link -->
         <section>
-            <h2 style="font-size: 16px; font-weight: 600; margin-bottom: 16px;">Development Logs</h2>
-            {% for log in recent_logs %}
-            <div class="minimal-card">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <span style="font-weight: 500;">{{ log.date|date:"F d, Y" }}</span>
-                    <span style="color: var(--text-tertiary);">{{ log.hours_worked }}h worked {{ log.get_mood_display|slice:":2" }}</span>
-                </div>
-                <div style="color: var(--text-secondary); font-size: 13px; line-height: 1.6;">
-                    {{ log.work_done_html|safe|truncatewords_html:40 }}
-                </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h2 style="font-size: 16px; font-weight: 600;">Development Logs</h2>
+                <a href="{% url 'devlog_list' project.pk %}" class="btn-ghost" style="text-decoration: none;">View All →</a>
             </div>
-            {% empty %}
-            <p style="color: var(--text-tertiary);">No development logs yet</p>
+            {% for log in recent_logs %}
+            <!-- Dev log cards -->
             {% endfor %}
         </section>
         
-        <!-- Sidebar Info -->
+        <!-- Sidebar with View All links -->
         <section>
-            <!-- Milestones -->
             <div style="margin-bottom: 32px;">
-                <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 12px;">Milestones</h3>
-                {% for milestone in milestones %}
-                <div class="minimal-card">
-                    <div class="card-title">{{ milestone.name }}</div>
-                    <div class="card-subtitle">Due {{ milestone.due_date|date:"M d" }}</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h3 style="font-size: 14px; font-weight: 600;">Milestones</h3>
+                    <a href="{% url 'milestone_list' project.pk %}" class="btn-ghost" style="text-decoration: none; padding: 2px 6px;">All</a>
                 </div>
-                {% empty %}
-                <p style="color: var(--text-tertiary); font-size: 13px;">No milestones set</p>
-                {% endfor %}
+                <!-- Milestones here -->
             </div>
             
-            <!-- Recent Builds -->
             <div>
-                <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 12px;">Builds</h3>
-                {% for build in recent_builds %}
-                <div class="minimal-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <div class="card-title">v{{ build.version }}</div>
-                            <div class="card-subtitle">{{ build.platform }}</div>
-                        </div>
-                        {% if build.is_stable %}
-                        <span class="tag tag-green">Stable</span>
-                        {% endif %}
-                    </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h3 style="font-size: 14px; font-weight: 600;">Builds</h3>
+                    <a href="{% url 'build_list' project.pk %}" class="btn-ghost" style="text-decoration: none; padding: 2px 6px;">All</a>
                 </div>
-                {% empty %}
-                <p style="color: var(--text-tertiary); font-size: 13px;">No builds yet</p>
-                {% endfor %}
+                <!-- Builds here -->
             </div>
         </section>
     </div>
 </div>
-
-<script>
-function updateTaskStatus(taskId, newStatus) {
-    // AJAX implementation here
-    console.log('Update task', taskId, 'to', newStatus);
-}
-</script>
 {% endblock %}

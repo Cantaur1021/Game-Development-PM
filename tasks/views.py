@@ -47,3 +47,56 @@ def task_update_status(request, pk):
         messages.success(request, f"Task status updated!")
     
     return redirect('project_detail', pk=task.project.pk)
+
+@login_required
+# tasks/views.py - add this function
+def task_list(request, project_pk):
+    project = get_object_or_404(Project, pk=project_pk)
+    tasks = project.task_set.all()
+    
+    context = {
+        'project': project,
+        'tasks': tasks,
+    }
+    return render(request, 'tasks/task_list.html', context)
+
+@login_required
+# projects/views.py - add these functions
+def milestone_create(request, project_pk):
+    project = get_object_or_404(Project, pk=project_pk)
+    
+    if request.method == 'POST':
+        milestone = Milestone(
+            project=project,
+            name=request.POST['name'],
+            description=request.POST.get('description', ''),
+            due_date=request.POST['due_date'],
+        )
+        milestone.save()
+        messages.success(request, "Milestone created!")
+        return redirect('project_detail', pk=project.pk)
+    
+    context = {'project': project}
+    return render(request, 'projects/milestone_form.html', context)
+
+@login_required
+def milestone_list(request, project_pk):
+    project = get_object_or_404(Project, pk=project_pk)
+    milestones = project.milestone_set.all()
+    
+    context = {
+        'project': project,
+        'milestones': milestones,
+    }
+    return render(request, 'projects/milestone_list.html', context)
+
+@login_required
+def build_list(request, project_pk):
+    project = get_object_or_404(Project, pk=project_pk)
+    builds = project.build_set.all()
+    
+    context = {
+        'project': project,
+        'builds': builds,
+    }
+    return render(request, 'projects/build_list.html', context)

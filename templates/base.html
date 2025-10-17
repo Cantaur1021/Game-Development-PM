@@ -391,6 +391,8 @@
         }
     </style>
 </head>
+<!-- templates/base.html -->
+<!-- Keep all the existing styles, just update the body section -->
 <body>
     <!-- Sidebar -->
     <div class="sidebar">
@@ -413,31 +415,18 @@
             </a>
         </div>
         
+        <!-- This needs to be passed from context in views -->
+        {% if all_projects %}
         <div class="sidebar-section">
             <div class="sidebar-section-title">Projects</div>
-            {% for project in projects %}
+            {% for project in all_projects %}
             <a href="{% url 'project_detail' project.pk %}" class="sidebar-link">
                 <span class="sidebar-icon">🎯</span>
                 {{ project.name }}
             </a>
             {% endfor %}
         </div>
-        
-        <div class="sidebar-section">
-            <div class="sidebar-section-title">Quick Links</div>
-            <a href="#" class="sidebar-link">
-                <span class="sidebar-icon">🐛</span>
-                All Bugs
-            </a>
-            <a href="#" class="sidebar-link">
-                <span class="sidebar-icon">📝</span>
-                Dev Logs
-            </a>
-            <a href="#" class="sidebar-link">
-                <span class="sidebar-icon">📦</span>
-                Assets
-            </a>
-        </div>
+        {% endif %}
     </div>
     
     <!-- Main Content -->
